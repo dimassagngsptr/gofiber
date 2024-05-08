@@ -41,8 +41,8 @@ func CreateCategory(c *fiber.Ctx) error{
 		})
 	}
 	categoryExist := models.GetCategoryByName(newCategory.Name)
-	fmt.Println("exist",strings.ToLower(categoryExist.Name))
-	fmt.Println("new",strings.ToLower(newCategory.Name))
+	// fmt.Println("exist",strings.ToLower(categoryExist.Name))
+	// fmt.Println("new",strings.ToLower(newCategory.Name))
 	if strings.ToLower(categoryExist.Name) == strings.ToLower(newCategory.Name) {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message":"Category already exists",
