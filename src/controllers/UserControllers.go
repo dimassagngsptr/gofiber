@@ -33,10 +33,9 @@ func CreateUser(c *fiber.Ctx) error {
 	}
 	isExist := models.GetUserByEmail(newUser.Email)
 	if isExist.Email != "" {
-		err:=c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message":"User email already exist",
 		})
-		return err
 	}
 
 	models.PostUser(&newUser)
