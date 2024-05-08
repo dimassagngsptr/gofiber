@@ -12,10 +12,11 @@ type Product struct {
 	Price float64 `json:"price"`
 	Stock int `json:"stock"`
 }
-func SelectAllProduct() []*Product {
+func SelectAllProduct() ([]*Product, int64) {
 	var items []*Product
-	configs.DB.Find(&items)
-	return items
+	var count int64
+	configs.DB.Find(&items).Count(&count)
+	return items,count
 }
 
 func SelectProductById(id int) *Product {

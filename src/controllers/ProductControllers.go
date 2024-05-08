@@ -10,8 +10,12 @@ import (
 )
 
 func GetAllProducts(c *fiber.Ctx) error {
-	products := models.SelectAllProduct()
-	return c.JSON(products)
+	products, count := models.SelectAllProduct()
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message":"Successfully retrieved all products",
+		"data":products,
+		"count":count,
+	})
 }
 
 func GetDetailProduct(c *fiber.Ctx) error {

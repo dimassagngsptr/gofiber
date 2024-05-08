@@ -9,8 +9,12 @@ import (
 )
 
 func GetAllUserAddresses(c *fiber.Ctx) error {
-	address := models.GetAllUserAddress()
-	return c.JSON(address)
+	address, count := models.GetAllUserAddress()
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": "Successfully retrieved all user address",
+		"data":address,
+		"count":count,
+	})
 }
 
 func GetUserAddress(c *fiber.Ctx) error{

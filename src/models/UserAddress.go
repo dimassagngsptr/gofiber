@@ -17,10 +17,11 @@ type UserAddress struct {
 	Primary    bool   `json:"primary" gorm:"default:0"`
 }
 
-func GetAllUserAddress() []*UserAddress{
+func GetAllUserAddress() ([]*UserAddress, int64){
 	var results []*UserAddress
-	configs.DB.Find(&results)
-	return results
+	var count int64
+	configs.DB.Find(&results).Count(&count)
+	return results, count
 }
 
 func GetUserAddress(id int) *UserAddress {

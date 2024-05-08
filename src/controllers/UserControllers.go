@@ -9,8 +9,12 @@ import (
 )
 
 func GetAllUser(c *fiber.Ctx) error {
-	users := models.GetAllUser()
-	return c.JSON(users)
+	users, count := models.GetAllUser()
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message":"Successfully retrieved all users",
+		"data":users,
+		"count":count,
+	})
 }
 func GetDetailUser(c *fiber.Ctx) error{
 	id, _ := strconv.Atoi(c.Params("id"))
