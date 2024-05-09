@@ -28,7 +28,7 @@ func GetDetailUser(c *fiber.Ctx) error{
 }
 
 func CreateUser(c *fiber.Ctx) error {
-	var newUser models.Users
+	var newUser models.User
 	if err := c.BodyParser(&newUser); err != nil {
 		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": "Invalid request body",
@@ -50,7 +50,7 @@ func CreateUser(c *fiber.Ctx) error {
 
 func UpdateUser(c *fiber.Ctx) error{
 	id, _ := strconv.Atoi(c.Params("id"))
-	var updateUser models.Users
+	var updateUser models.User
 	if err := c.BodyParser(&updateUser); err != nil {
 		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message":"Invalud request body",
