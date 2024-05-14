@@ -8,9 +8,9 @@ import (
 
 type User struct {
 	gorm.Model
-	Name  string  `json:"name"`
-	Email string `json:"email"`
-	Password string     `json:"password"`
+	Name  string  `json:"name" validate:"required,min=3"`
+	Email string `json:"email" validate:"required"`
+	Password string     `json:"password" validate:"required"`
 	Phone_number string `json:"phone_number"`
 	Address []Address `json:"address"`
 
@@ -29,10 +29,10 @@ func GetUserById(id int) *User{
 	return &user
 }
 
-func GetUserByEmail(email string) *User{
+func GetUserByEmail(email string) (*User, error){
 	var user User
-	configs.DB.Preload("Address").First(&user, "email = ?",email)
-	return &user
+	results:=configs.DB.Preload("Address").First(&user, "email = ?",email)
+	return &user,results.Error 
 }
 
 func PostUser(newUser *User) error{

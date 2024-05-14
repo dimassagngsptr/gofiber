@@ -2,11 +2,13 @@ package main
 
 import (
 	"gofiber/src/configs"
-	"gofiber/src/helper"
+	"gofiber/src/helpers"
 	"gofiber/src/routes"
 	"log"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/helmet"
 	"github.com/joho/godotenv"
 )
 
@@ -17,8 +19,17 @@ func main() {
 	}
 	app:=fiber.New()
 
+	app.Use(helmet.New())
+
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: "*",
+		AllowMethods: "GET POST PUT PATCH DELETE",
+		AllowHeaders: "*",
+		ExposeHeaders: "Content-Length",
+	}))
+
 	configs.InitDB()
-	helper.Migration()
+	helpers.Migration()
 	routes.Router(app)
 	
 

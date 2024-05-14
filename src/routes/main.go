@@ -31,4 +31,8 @@ func Router(app *fiber.App) {
 	app.Post("/category", controllers.CreateCategory)
 	app.Put("/category/:id", controllers.UpdateCategory)
 	app.Delete("/category/:id", controllers.DeleteCategory)
+	// auth
+	app.Post("/auth/register", controllers.RegisterUser)
+	app.Post("/auth/login", controllers.LoginUser)
+
 	}
