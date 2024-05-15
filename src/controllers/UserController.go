@@ -2,12 +2,12 @@ package controllers
 
 import (
 	"fmt"
-	"gofiber/src/helpers"
+	_"gofiber/src/helpers"
 	"gofiber/src/models"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/mitchellh/mapstructure"
+	_"github.com/mitchellh/mapstructure"
 )
 
 func GetAllUser(c *fiber.Ctx) error {
@@ -29,38 +29,38 @@ func GetDetailUser(c *fiber.Ctx) error{
 	return c.JSON(foundUser)
 }
 
-func CreateUser(c *fiber.Ctx) error {
-	var user map[string]interface{}
-	if err := c.BodyParser(&user); err != nil {
-		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": "Invalid request body",
-		})
-		return err
-	}
+// func CreateUser(c *fiber.Ctx) error {
+// 	var user map[string]interface{}
+// 	if err := c.BodyParser(&user); err != nil {
+// 		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+// 			"message": "Invalid request body",
+// 		})
+// 		return err
+// 	}
 
 
-	user = helpers.XssMiddleware(user)
-	var newUser models.User
-	mapstructure.Decode(user, &newUser)
+// 	user = helpers.XssMiddleware(user)
+// 	var newUser models.User
+// 	mapstructure.Decode(user, &newUser)
 
 
-	errors := helpers.ValidateStruct(newUser)
-	if len(errors) > 0{
-		return c.Status(fiber.StatusUnprocessableEntity).JSON(errors)
-	}
+// 	errors := helpers.ValidateStruct(newUser)
+// 	if len(errors) > 0{
+// 		return c.Status(fiber.StatusUnprocessableEntity).JSON(errors)
+// 	}
 	
-	userExist, _ := models.GetUserByEmail(newUser.Email)
-	if userExist.Email != "" {
-	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message":fmt.Sprintf("User with email %v already exist", newUser.Email),
-		})
-	}
+// 	userExist, _ := models.GetUserByEmail(newUser.Email)
+// 	if userExist.Email != "" {
+// 	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+// 			"message":fmt.Sprintf("User with email %v already exist", newUser.Email),
+// 		})
+// 	}
 
-	models.PostUser(&newUser)
-	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
-		"message": "User created successfully",
-	})
-}
+// 	models.PostUser(&newUser)
+// 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+// 		"message": "User created successfully",
+// 	})
+// }
 
 func UpdateUser(c *fiber.Ctx) error{
 	id, _ := strconv.Atoi(c.Params("id"))

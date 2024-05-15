@@ -8,12 +8,12 @@ import (
 
 type Address struct {
 	gorm.Model
-	Label      string `json:"label"`
-	Name       string `json:"name"`
-	Phone      string `json:"phone"`
-	Address    string `json:"address"`
-	PostalCode string `json:"postal_code"`
-	City       string `json:"city"`
+	Label      string `json:"label" validate:"required,min=3"`
+	Name       string `json:"name" validate:"required,min=5"`
+	Phone      string `json:"phone" validate:"required"`
+	Address    string `json:"address" validate:"required,min=20"`
+	PostalCode string `json:"postal_code" validate:"required,min=5"`
+	City       string `json:"city" validate:"required"`
 	Primary    bool   `json:"primary" gorm:"default:0"`
 	UserID int `json:"user_id"`
 	User User `gorm:"foreignKey:UserID"`
@@ -32,9 +32,9 @@ func GetAddress(id int) *Address {
 	return &results
 }
 
-func GetAddressByNameAndAddress(name string, address string) *Address{
+func GetAddressByNameAndAddress(name string, address string, id uint) *Address{
 	var results Address
-	configs.DB.Model(&Address{}).Where("name = ? AND address = ?", name, address).First(&results)
+	configs.DB.Model(&Address{}).Where("name = ? AND address = ? AND ID = ?", name, address, id).First(&results)
 	return &results
 }
 

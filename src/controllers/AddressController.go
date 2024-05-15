@@ -36,8 +36,8 @@ func CreateAddress(c *fiber.Ctx) error {
 		})
 		return err
 	}
-	addressExist := models.GetAddressByNameAndAddress(newAddress.Name, newAddress.Address)
-	if addressExist.Address != "" || addressExist.Name != ""{
+	addressExist := models.GetAddressByNameAndAddress(newAddress.Name, newAddress.Address, uint(newAddress.UserID))
+	if addressExist.ID != 0{
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message":"Address already exists",
 		})

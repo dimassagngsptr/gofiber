@@ -11,8 +11,8 @@ import (
 
 func ExtractToken(c *fiber.Ctx) string {
 	bearerToken := c.Get("Authorization")
-	if strings.HasPrefix(bearerToken, "Bearer"){
-		return strings.TrimPrefix(bearerToken, "Bearer")
+	if strings.HasPrefix(bearerToken, "Bearer "){
+		return strings.TrimPrefix(bearerToken, "Bearer ")
 	}
 	return ""
 }
@@ -21,6 +21,7 @@ func JwtMiddleware() fiber.Handler{
 	secretKey := os.Getenv("JWT_KEY")
 	return func(c *fiber.Ctx) error{
 		tokenString := ExtractToken(c)
+		// fmt.Println(tokenString)
 		if tokenString == "" {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 				"error":"Unauthorized",
@@ -32,6 +33,7 @@ func JwtMiddleware() fiber.Handler{
 						}
 				return []byte(secretKey), nil
 			})
+			// fmt.Println(err)
 			if err != nil{
 				return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 					"error": "Unauthorized",

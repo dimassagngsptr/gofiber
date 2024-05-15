@@ -33,6 +33,12 @@ func RegisterUser(c *fiber.Ctx) error{
 			"message":fmt.Sprintf("User with email %v already exist", newUser.Email),
 		})
 	}
+	_, err := helpers.ValidatePassword(newUser.Password)
+	if err != nil {
+		return c.Status(fiber.StatusNotAcceptable).JSON(fiber.Map{
+			"message":err.Error(),
+		})
+	}
 	hashPassword, _ := bcrypt.GenerateFromPassword([]byte(newUser.Password),bcrypt.DefaultCost)
 	newUser.Password = string(hashPassword)
 	if err := models.PostUser(&newUser); err != nil {
@@ -76,7 +82,7 @@ func LoginUser(c *fiber.Ctx) error{
 	}
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"statusCode":fiber.StatusOK,
-		"Message":"Login successful",
+		"message":"Login successful",
 		"token":token,
 		"data":user,
 	})

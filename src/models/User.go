@@ -9,17 +9,32 @@ import (
 type User struct {
 	gorm.Model
 	Name  string  `json:"name" validate:"required,min=3"`
-	Email string `json:"email" validate:"required"`
+	Email string `json:"email" validate:"required,email"`
 	Password string     `json:"password" validate:"required"`
-	Phone_number string `json:"phone_number"`
+	Phone_number string `json:"phone_number" validate:"min=10,max=13"`
 	Address []Address `json:"address"`
 
+}
+
+type APIAddress struct{
+	gorm.Model
+	Label      string `json:"label"`
+	Name       string `json:"name"`
+	Phone      string `json:"phone"`
+	Address    string `json:"address" `
+	PostalCode string `json:"postal_code"`
+	City       string `json:"city"`
+	Primary    bool   `json:"primary" gorm:"default:0"`
+	UserID int `json:"user_id"`
 }
 
 func GetAllUser() ([]*User, int64){
 	var results []*User
 	var count int64
-	configs.DB.Preload("Address").Find(&results).Count(&count)
+	configs.DB.Preload("Address",func(db *gorm.DB) *gorm.DB {
+		var items []*APIAddress
+		return db.Model(&Address{}).Find(&items)
+	}).Find(&results).Count(&count)
 	return results, count
 }
 

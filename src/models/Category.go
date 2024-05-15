@@ -2,6 +2,7 @@ package models
 
 import (
 	"gofiber/src/configs"
+
 	"gorm.io/gorm"
 )
 
@@ -13,16 +14,32 @@ type Category struct {
 
 }
 
+type APIProduct struct{
+	gorm.Model
+	Name string `json:"name"`
+	Price float64 `json:"price"`
+	Descriptions string `json:"descriptions"`
+	Image string `json:"image"`
+	Stock int `json:"stock"`
+	CategoryID uint `json:"category_id"`
+}
+
 func GetAllCategories() ([]*Category, int64){
 	var categories []*Category
 	var count int64
-	configs.DB.Preload("Product").Find(&categories).Count(&count)
+	configs.DB.Preload("Product", func(db *gorm.DB) *gorm.DB {
+		var items []*APIProduct
+		return db.Model(&Product{}).Find(&items)
+	}).Find(&categories).Count(&count)
 	return categories,count
 }
 
 func GetCategoryById(id int) *Category{
 	var category Category
-	configs.DB.Preload("Product").First(&category,"id = ?",id)
+	configs.DB.Preload("Product",func(db *gorm.DB)*gorm.DB{
+		var results []*APIProduct
+		return db.Model(&Product{}).Find(&results)
+	}).First(&category,"id = ?",id)
 	return &category
 }
 
