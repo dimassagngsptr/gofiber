@@ -10,6 +10,6 @@ func GenerateToken(secretKey, email string) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims:= token.Claims.(jwt.MapClaims)
 	claims["email"]=email
-	claims["exp"] = time.Now().Add(time.Hour * 1).Unix()
+	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
 	return token.SignedString([]byte(secretKey))
 }

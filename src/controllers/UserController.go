@@ -2,12 +2,13 @@ package controllers
 
 import (
 	"fmt"
-	_"gofiber/src/helpers"
+	_ "gofiber/src/helpers"
 	"gofiber/src/models"
 	"strconv"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
-	_"github.com/mitchellh/mapstructure"
+	_ "github.com/mitchellh/mapstructure"
 )
 
 func GetAllUser(c *fiber.Ctx) error {
@@ -20,7 +21,16 @@ func GetAllUser(c *fiber.Ctx) error {
 }
 func GetDetailUser(c *fiber.Ctx) error{
 	id, _ := strconv.Atoi(c.Params("id"))
-	foundUser := models.GetUserById(id)
+	sort := c.Query("sort")
+	sortBy := c.Query("orderBy")
+	if sort == "" {
+		sort = "ASC"
+	}
+	if sortBy == "" {
+		sortBy ="name"
+	}
+	sort = sortBy + " " + strings.ToLower(sort)
+	foundUser := models.GetUserById(sort,id)
 	if foundUser.ID == 0{
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"message":"User not found",
@@ -28,39 +38,6 @@ func GetDetailUser(c *fiber.Ctx) error{
 	}
 	return c.JSON(foundUser)
 }
-
-// func CreateUser(c *fiber.Ctx) error {
-// 	var user map[string]interface{}
-// 	if err := c.BodyParser(&user); err != nil {
-// 		c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-// 			"message": "Invalid request body",
-// 		})
-// 		return err
-// 	}
-
-
-// 	user = helpers.XssMiddleware(user)
-// 	var newUser models.User
-// 	mapstructure.Decode(user, &newUser)
-
-
-// 	errors := helpers.ValidateStruct(newUser)
-// 	if len(errors) > 0{
-// 		return c.Status(fiber.StatusUnprocessableEntity).JSON(errors)
-// 	}
-	
-// 	userExist, _ := models.GetUserByEmail(newUser.Email)
-// 	if userExist.Email != "" {
-// 	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-// 			"message":fmt.Sprintf("User with email %v already exist", newUser.Email),
-// 		})
-// 	}
-
-// 	models.PostUser(&newUser)
-// 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
-// 		"message": "User created successfully",
-// 	})
-// }
 
 func UpdateUser(c *fiber.Ctx) error{
 	id, _ := strconv.Atoi(c.Params("id"))

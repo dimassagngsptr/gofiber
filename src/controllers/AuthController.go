@@ -11,6 +11,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+
 func RegisterUser(c *fiber.Ctx) error{
 	var input map[string]interface{}
 	if err := c.BodyParser(&input); err != nil{
@@ -33,7 +34,7 @@ func RegisterUser(c *fiber.Ctx) error{
 			"message":fmt.Sprintf("User with email %v already exist", newUser.Email),
 		})
 	}
-	_, err := helpers.ValidatePassword(newUser.Password)
+	err := helpers.ValidatePassword(newUser.Password)
 	if err != nil {
 		return c.Status(fiber.StatusNotAcceptable).JSON(fiber.Map{
 			"message":err.Error(),
@@ -84,6 +85,5 @@ func LoginUser(c *fiber.Ctx) error{
 		"statusCode":fiber.StatusOK,
 		"message":"Login successful",
 		"token":token,
-		"data":user,
 	})
 }

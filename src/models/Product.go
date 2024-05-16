@@ -16,10 +16,11 @@ type Product struct {
 	CategoryID uint `json:"category_id" validate:"required"`
 	Category Category `gorm:"foreignKey:CategoryID"`
 }
-func SelectAllProduct() ([]*Product, int64) {
+func SelectAllProduct(sort,name string) ([]*Product, int64) {
 	var items []*Product
 	var count int64
-	configs.DB.Preload("Category").Find(&items).Count(&count)
+	name = "%" + name + "%"
+	configs.DB.Preload("Category").Order(sort).Where("name LIKE ?",name).Find(&items).Count(&count)
 	return items,count
 }
 

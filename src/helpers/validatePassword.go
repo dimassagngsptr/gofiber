@@ -5,10 +5,10 @@ import (
 	"regexp"
 )
 
-func ValidatePassword(password string) (interface{}, error) {
+func ValidatePassword(password string) error {
 
 	if len(password) < 8 {
-		return nil, fmt.Errorf("password must be at least 8 characters")
+		return  fmt.Errorf("password must be at least 8 characters")
 	}
 	// isValidate := regexp.MustCompile(`^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#\$%\^&\*]).+$`)
 
@@ -17,17 +17,17 @@ func ValidatePassword(password string) (interface{}, error) {
 	numberPassword := regexp.MustCompile(`[0-9]`)
 	charPassword := regexp.MustCompile(`[_!@#\$%\^&\*]`)
 	if !uppercasePassword.MatchString(password){
-		return nil, fmt.Errorf("password must contain at least one uppercase letter")
+		return fmt.Errorf("password must contain at least one uppercase letter")
 	}
 	if !lowercasePassword.MatchString(password){
-		return nil, fmt.Errorf("password must contain at least one lowercase letter")
+		return fmt.Errorf("password must contain at least one lowercase letter")
 	}
 	if !numberPassword.MatchString(password){
-		return nil, fmt.Errorf("password must contain at least one digit number")
+		return fmt.Errorf("password must contain at least one digit number")
 	}
 	if !charPassword.MatchString(password){
-		return nil, fmt.Errorf("password must contain at least one special character")
+		return fmt.Errorf("password must contain at least one special character")
 	}
-	return true, nil
+	return nil
 
 }

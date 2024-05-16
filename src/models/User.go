@@ -12,7 +12,7 @@ type User struct {
 	Email string `json:"email" validate:"required,email"`
 	Password string     `json:"password" validate:"required"`
 	Phone_number string `json:"phone_number" validate:"min=10,max=13"`
-	Address []Address `json:"address"`
+	Address []APIAddress `json:"address"`
 
 }
 
@@ -38,15 +38,21 @@ func GetAllUser() ([]*User, int64){
 	return results, count
 }
 
-func GetUserById(id int) *User{
+func GetUserById(sort string,id int) *User{
 	var user User
-	configs.DB.Preload("Address").First(&user, "id = ?", id)
+	configs.DB.Preload("Address",func(db *gorm.DB) *gorm.DB {
+		var items []*APIAddress
+		return db.Model(&Address{}).Order(sort).Find(&items)
+	}).First(&user, "id = ?", id)
 	return &user
 }
 
 func GetUserByEmail(email string) (*User, error){
 	var user User
-	results:=configs.DB.Preload("Address").First(&user, "email = ?",email)
+	results:=configs.DB.Preload("Address",func(db *gorm.DB) *gorm.DB {
+		var items []*APIAddress
+		return db.Model(&Address{}).Find(&items)
+	}).First(&user, "email = ?",email)
 	return &user,results.Error 
 }
 

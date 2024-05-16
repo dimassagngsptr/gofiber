@@ -8,32 +8,34 @@ import (
 )
 
 func Router(app *fiber.App) {
+	api:= app.Group("/v1")
+	auth := api.Group("/auth")
 	// products
-	app.Get("/products",  controllers.GetAllProducts)
-	// app.Get("/products", middlewares.JwtMiddleware(), controllers.GetAllProducts)
-	app.Get("/product/:id", controllers.GetDetailProduct)
-	app.Post("/product", controllers.CreateProduct)
-	app.Put("/product/:id", controllers.UpdateProduct)
-	app.Delete("/product/:id", controllers.DeleteProduct)
+	api.Get("/products",  controllers.GetAllProducts)
+	// api.Get("/products", middlewares.JwtMiddleware(), controllers.GetAllProducts)
+	api.Get("/product/:id", controllers.GetDetailProduct)
+	api.Post("/product", controllers.CreateProduct)
+	api.Put("/product/:id", controllers.UpdateProduct)
+	api.Delete("/product/:id", controllers.DeleteProduct)
 	// users
-	app.Get("/users", controllers.GetAllUser)
-	app.Get("/user/:id", controllers.GetDetailUser)
-	app.Put("/user/:id", controllers.UpdateUser)
-	app.Delete("/user/:id", controllers.DeleteUser)
+	api.Get("/users", controllers.GetAllUser)
+	api.Get("/user/:id", controllers.GetDetailUser)
+	api.Put("/user/:id", controllers.UpdateUser)
+	api.Delete("/user/:id", controllers.DeleteUser)
 	// addresses
-	app.Get("/address", controllers.GetAllAddresses)
-	app.Get("/address/:id", controllers.GetDetailAddress)
-	app.Post("/address", controllers.CreateAddress)
-	app.Put("/address/:id", controllers.UpdateAddress)
-	app.Delete("/address/:id", controllers.DeleteAddress)
+	api.Get("/address", controllers.GetAllAddresses)
+	api.Get("/address/:id", controllers.GetDetailAddress)
+	api.Post("/address", controllers.CreateAddress)
+	api.Put("/address/:id", controllers.UpdateAddress)
+	api.Delete("/address/:id", controllers.DeleteAddress)
 	//categories
-	app.Get("/categories", controllers.GetAllCategory)
-	app.Get("/category/:id",controllers.GetCategoryById)
-	app.Post("/category", controllers.CreateCategory)
-	app.Put("/category/:id", controllers.UpdateCategory)
-	app.Delete("/category/:id", controllers.DeleteCategory)
+	api.Get("/categories", controllers.GetAllCategory)
+	api.Get("/category/:id",controllers.GetCategoryById)
+	api.Post("/category", controllers.CreateCategory)
+	api.Put("/category/:id", controllers.UpdateCategory)
+	api.Delete("/category/:id", controllers.DeleteCategory)
 	// auth
-	app.Post("/auth/register", controllers.RegisterUser)
-	app.Post("/auth/login", controllers.LoginUser)
-
+	auth.Post("/register", controllers.RegisterUser)
+	auth.Post("/login", controllers.LoginUser)
+	
 	}

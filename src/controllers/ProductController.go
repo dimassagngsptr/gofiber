@@ -1,8 +1,10 @@
 package controllers
 
 import (
+	"gofiber/src/helpers"
 	"gofiber/src/models"
 	"strconv"
+	"strings"
 
 	"fmt"
 
@@ -10,7 +12,18 @@ import (
 )
 
 func GetAllProducts(c *fiber.Ctx) error {
-	products, count := models.SelectAllProduct()
+	keyword := c.Query("search")
+	sort := c.Query("sort")
+	sortBy := c.Query("orderBy")
+	if sort == "" {
+		sort = "ASC"
+	}
+	if sortBy == "" {
+		sortBy = "name"
+	}
+	key := helpers.ToCapitalCase(keyword)
+	sort = sortBy + " " + strings.ToLower(sort)
+	products, count := models.SelectAllProduct(sort,key)
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"message":"Successfully retrieved all products",
 		"data":products,

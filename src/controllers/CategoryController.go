@@ -2,15 +2,28 @@ package controllers
 
 import (
 	"fmt"
+	"gofiber/src/helpers"
 	"gofiber/src/models"
 	"strconv"
-	_"strings"
+	"strings"
+	_ "strings"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 func GetAllCategory(c *fiber.Ctx) error {
-	categories, count := models.GetAllCategories()
+	keyword := c.Query("search")
+	sort := c.Query("sort")
+	sortBy := c.Query("orderBy")
+	if sort == ""{
+		sort = "ASC"
+	}
+	if sortBy == ""{
+		sortBy ="name"
+	}
+	sort = sortBy + " " + strings.ToLower(sort)
+	key := helpers.ToCapitalCase(keyword)
+	categories, count := models.GetAllCategories(sort,key)
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"message":"Successfully retrieved all categories",
 		"data":categories,

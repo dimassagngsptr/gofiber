@@ -8,9 +8,9 @@ import (
 
 type Category struct {
 	gorm.Model
-	Name string `json:"name"`
+	Name string `json:"name" validate:"required,min=3,max=100"`
 	Image string `json:"image"`
-	Product []Product `json:"product"`
+	Product []APIProduct `json:"product"`
 
 }
 
@@ -24,13 +24,14 @@ type APIProduct struct{
 	CategoryID uint `json:"category_id"`
 }
 
-func GetAllCategories() ([]*Category, int64){
+func GetAllCategories(sort,name string) ([]*Category, int64){
 	var categories []*Category
 	var count int64
+	name = "%" + name + "%"
 	configs.DB.Preload("Product", func(db *gorm.DB) *gorm.DB {
 		var items []*APIProduct
 		return db.Model(&Product{}).Find(&items)
-	}).Find(&categories).Count(&count)
+	}).Order(sort).Where("name LIKE ?",name).Find(&categories).Count(&count)
 	return categories,count
 }
 
@@ -45,7 +46,10 @@ func GetCategoryById(id int) *Category{
 
 func GetCategoryByName(name string) *Category{
 	var category Category
-	configs.DB.First(&category,"name = ?", name)
+	configs.DB.Preload("Product",func(db *gorm.DB)*gorm.DB{
+		var results []*APIProduct
+		return db.Model(&Product{}).Find(&results)
+	}).First(&category,"name = ?", name)
 	return &category
 }
 
