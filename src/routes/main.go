@@ -2,7 +2,7 @@ package routes
 
 import (
 	"gofiber/src/controllers"
-	_"gofiber/src/middlewares"
+	"gofiber/src/middlewares"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -11,15 +11,16 @@ func Router(app *fiber.App) {
 	api:= app.Group("/v1")
 	auth := api.Group("/auth")
 	// products
-	api.Get("/products",  controllers.GetAllProducts)
-	// api.Get("/products", middlewares.JwtMiddleware(), controllers.GetAllProducts)
+	// api.Get("/products",  controllers.GetAllProducts)
+	api.Get("/products", middlewares.JwtMiddleware(),middlewares.ValidateSellerRole(), controllers.GetAllProducts)
 	api.Get("/product/:id", controllers.GetDetailProduct)
 	api.Post("/product", controllers.CreateProduct)
 	api.Put("/product/:id", controllers.UpdateProduct)
 	api.Delete("/product/:id", controllers.DeleteProduct)
 	// users
 	api.Get("/users", controllers.GetAllUser)
-	api.Get("/user/:id", controllers.GetDetailUser)
+	api.Get("/user",middlewares.JwtMiddleware(), controllers.GetDetailUser)
+	api.Post("/refreshToken", controllers.RefreshToken)
 	api.Put("/user/:id", controllers.UpdateUser)
 	api.Delete("/user/:id", controllers.DeleteUser)
 	// addresses

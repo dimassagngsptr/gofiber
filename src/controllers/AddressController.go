@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"gofiber/src/helpers"
 	"gofiber/src/models"
 	"strconv"
 
@@ -9,7 +10,8 @@ import (
 )
 
 func GetAllAddresses(c *fiber.Ctx) error {
-	address, count := models.GetAllAddress()
+	address := models.GetAllAddress()
+	count := helpers.CountData("addresses")
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"message": "Successfully retrieved all user address",
 		"data":address,

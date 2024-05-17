@@ -21,24 +21,55 @@ func JwtMiddleware() fiber.Handler{
 	secretKey := os.Getenv("JWT_KEY")
 	return func(c *fiber.Ctx) error{
 		tokenString := ExtractToken(c)
-		// fmt.Println(tokenString)
 		if tokenString == "" {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 				"error":"Unauthorized",
 			})
 		}
-			_, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-						if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok{
+			token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+						if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok	{
 								return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 						}
 				return []byte(secretKey), nil
 			})
-			// fmt.Println(err)
 			if err != nil{
 				return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 					"error": "Unauthorized",
 				})
 			}
+			if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+			c.Locals("userClaims", claims)
+		} else {
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"error": "Unauthorized",
+			})
+		}
 			return c.Next()
 	}
+}
+
+func ValidateSellerRole() fiber.Handler{
+	return func(c *fiber.Ctx) error{
+		claims:=GetUserClaims(c)
+		if claims == nil{
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"message":"Unauthorized",
+			})
+		}
+		role, ok :=claims["role"].(string)
+		if !ok || role != "seller"{
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"Forbidden":"You don't have permission to access",
+			})
+		}
+		return c.Next()
+	}
+}
+
+func GetUserClaims(c *fiber.Ctx) jwt.MapClaims {
+	if claims, ok := c.Locals("userClaims").(jwt.MapClaims); ok {
+		fmt.Println("claims middleware: ", claims)
+		return claims
+	}
+	return nil
 }

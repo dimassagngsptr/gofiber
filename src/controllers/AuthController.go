@@ -74,16 +74,66 @@ func LoginUser(c *fiber.Ctx) error{
 			"message":"Incorrect password",
 		})
 	}
-	token, err := helpers.GenerateToken(os.Getenv("JWT_KEY"), user.Email)
+	jwtKey := os.Getenv("JWT_KEY")
+	payload := map[string]interface{}{
+        "ID": user.ID,
+				"role":user.Role,
+    }
+	token, err := helpers.GenerateToken(jwtKey, payload)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"statusCode":fiber.StatusInternalServerError,
 			"message":"Failed to generate Token",
 		})
 	}
+	refreshToken, err := helpers.GenerateRefreshToken(jwtKey, payload)
+	if err != nil {
+        return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+            "error": "Could not generate refresh token",
+        })
+    }
+		item := map[string]string{
+        "Email":        user.Email,
+        "Token":        token,
+        "RefreshToken": refreshToken,
+    }
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"statusCode":fiber.StatusOK,
 		"message":"Login successful",
-		"token":token,
+		"data":item,
 	})
+}
+func RefreshToken(c *fiber.Ctx) error {
+    var input struct {
+        RefreshToken string `json:"refreshToken"`
+    }
+    if err := c.BodyParser(&input); err != nil {
+        return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+            "error": "Failed to parse request body",
+        })
+    }
+
+    jwtKey := os.Getenv("JWT_KEY")
+    token, err := helpers.GenerateToken(jwtKey, map[string]interface{}{"refreshToken": input.RefreshToken})
+    if err != nil {
+        return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+            "error": "Could not generate access token",
+        })
+    }
+
+    refreshToken, err := helpers.GenerateRefreshToken(jwtKey, map[string]interface{}{"refreshToken": input.RefreshToken})
+    if err != nil {
+        return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+            "error": "Could not generate refresh token",
+        })
+    }
+    item := map[string]string{
+        "Token":        token,
+        "RefreshToken": refreshToken,
+    }
+
+    return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+        "message": "Refresh successfully",
+        "data":    item,
+    })
 }

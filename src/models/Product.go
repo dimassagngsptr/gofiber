@@ -16,12 +16,11 @@ type Product struct {
 	CategoryID uint `json:"category_id" validate:"required"`
 	Category Category `gorm:"foreignKey:CategoryID"`
 }
-func SelectAllProduct(sort,name string) ([]*Product, int64) {
+func SelectAllProduct(sort,name string,limit,offset int) []*Product {
 	var items []*Product
-	var count int64
 	name = "%" + name + "%"
-	configs.DB.Preload("Category").Order(sort).Where("name LIKE ?",name).Find(&items).Count(&count)
-	return items,count
+	configs.DB.Preload("Category").Order(sort).Limit(limit).Offset(offset).Where("name ILIKE ?",name).Find(&items)
+	return items
 }
 
 func SelectProductById(id int) *Product {

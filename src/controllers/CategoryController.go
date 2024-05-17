@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"gofiber/src/helpers"
 	"gofiber/src/models"
+	"math"
 	"strconv"
 	"strings"
-	_ "strings"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -15,6 +15,17 @@ func GetAllCategory(c *fiber.Ctx) error {
 	keyword := c.Query("search")
 	sort := c.Query("sort")
 	sortBy := c.Query("orderBy")
+	pageOld := c.Query("page")
+	limitOld := c.Query("limit")
+	page, _ := strconv.Atoi(pageOld)
+	if page == 0{
+		page =1
+	}
+	limit, _ := strconv.Atoi(limitOld)
+	if limit == 0{
+		limit = 5
+	}
+	offset := (page -1) * limit
 	if sort == ""{
 		sort = "ASC"
 	}
@@ -22,12 +33,16 @@ func GetAllCategory(c *fiber.Ctx) error {
 		sortBy ="name"
 	}
 	sort = sortBy + " " + strings.ToLower(sort)
-	key := helpers.ToCapitalCase(keyword)
-	categories, count := models.GetAllCategories(sort,key)
+	categories := models.GetAllCategories(sort,keyword,limit,offset)
+	count := helpers.CountData("category")
+	totalPage := math.Ceil(float64(count)/float64(limit))
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"message":"Successfully retrieved all categories",
 		"data":categories,
-		"count":count,
+		"totalPage":totalPage,
+		"totalData":count,
+		"limit":limit,
+		"page":page,
 	})
 }
 

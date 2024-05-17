@@ -19,11 +19,10 @@ type Address struct {
 	User User `gorm:"foreignKey:UserID"`
 }
 
-func GetAllAddress() ([]*Address, int64){
+func GetAllAddress() []*Address{
 	var results []*Address
-	var count int64
-	configs.DB.Preload("User").Find(&results).Count(&count)
-	return results, count
+	configs.DB.Preload("User").Find(&results)
+	return results
 }
 
 func GetAddress(id int) *Address {

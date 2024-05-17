@@ -3,6 +3,7 @@ package controllers
 import (
 	"gofiber/src/helpers"
 	"gofiber/src/models"
+	"math"
 	"strconv"
 	"strings"
 
@@ -13,21 +14,36 @@ import (
 
 func GetAllProducts(c *fiber.Ctx) error {
 	keyword := c.Query("search")
+	pageOld := c.Query("page")
+	limitOld := c.Query("limit")
+	page,_ := strconv.Atoi(pageOld)
+	limit,_ :=strconv.Atoi(limitOld)
 	sort := c.Query("sort")
 	sortBy := c.Query("orderBy")
+	if page == 0{
+		page = 1
+	}
+	if limit == 0{
+		limit = 5
+	}
+	offset := (page - 1) *limit
 	if sort == "" {
 		sort = "ASC"
 	}
 	if sortBy == "" {
 		sortBy = "name"
 	}
-	key := helpers.ToCapitalCase(keyword)
 	sort = sortBy + " " + strings.ToLower(sort)
-	products, count := models.SelectAllProduct(sort,key)
+	products := models.SelectAllProduct(sort,keyword,limit,offset)
+	count := helpers.CountData("products")
+	totalPage := math.Ceil(float64(count) / float64(limit))
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"message":"Successfully retrieved all products",
 		"data":products,
-		"count":count,
+		"totalData":count,
+		"totalPage":totalPage,
+		"limit":limit,
+		"page":page,
 	})
 }
 
