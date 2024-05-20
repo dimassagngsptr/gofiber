@@ -65,3 +65,8 @@ func DeleteCategory(id int) error {
 	results := configs.DB.Delete(&Category{}, "id = ?", id)
 	return results.Error
 }
+
+func UploadPhotoCategory(id int, image map[string]interface{}) error {
+	results := configs.DB.Model(&Category{}).Where("id = ?", id).Updates(image)
+	return results.Error
+}

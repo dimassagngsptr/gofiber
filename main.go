@@ -20,7 +20,7 @@ func main() {
 	app:=fiber.New()
 
 	app.Use(helmet.New())
-
+	app.Static("/public","./src/public")
 	// app.Use(cors.New(cors.Config{
 	// 	AllowOrigins: "*",
 	// 	AllowMethods: "GET POST PUT PATCH DELETE",

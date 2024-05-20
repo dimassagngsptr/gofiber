@@ -56,6 +56,7 @@ func ValidateSellerRole() fiber.Handler{
 				"message":"Unauthorized",
 			})
 		}
+		fmt.Println("role", claims)
 		role, ok :=claims["role"].(string)
 		if !ok || role != "seller"{
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{

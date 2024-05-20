@@ -77,3 +77,4 @@ func DeleteUser(id int) error {
 	results := configs.DB.Delete(&User{}, "id = ?", id)
 	return results.Error
 }
+
