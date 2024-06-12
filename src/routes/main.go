@@ -16,7 +16,7 @@ func Router(app *fiber.App) {
 	api.Get("/product/:id", controllers.GetDetailProduct)
 	api.Post("/product", controllers.CreateProduct)
 	api.Put("/product/uploadServer/:id", controllers.UploadImageProductServer)
-	api.Put("/product/upload/:id", controllers.UploadImageProduct)
+	// api.Put("/product/upload/:id", controllers.UploadImageProduct)
 	api.Put("/product/:id", controllers.UpdateProduct)
 	api.Delete("/product/:id", controllers.DeleteProduct)
 

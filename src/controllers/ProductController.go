@@ -191,7 +191,6 @@ func UploadImageProductServer(c *fiber.Ctx) error {
 	uploadPhoto := map[string]interface{}{
 		"Image": uploadResult.URL,
 	}
-	fmt.Println("uploadPhoto", uploadPhoto)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": err.Error(),
